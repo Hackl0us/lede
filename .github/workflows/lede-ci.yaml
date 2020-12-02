@@ -85,29 +85,25 @@ jobs:
           du -h ./ --max-depth=1
           du -h /mnt/openwrt/ --max-depth=1 || true
 
-      - name: Patch and build Docker Image
-        run: |
-          GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
-          GIT_BRANCH=${GITHUB_REF##*/}
-
-          CURRENT_DIR=$(pwd)
-          cp -rf $(find ./bin/targets/ -name "*.tar.gz") ./build_openwrt_docker_image
-          cd build_openwrt_docker_image
-          chmod +x ./build.sh && ./build.sh $GIT_HASH
-          docker load < openwrt_docker_image/*.tar
-          cd ${CURRENT_DIR}
-
       - name: Login to DockerHub
         uses: docker/login-action@v1.5.0
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Push LEDE docker image to Docker Hub
+      - name: Patch docker image and push to Docker Hub
         run: |
           GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
-          docker push hackl0us/lede-aarch64:"$GIT_HASH"
+          CURRENT_DIR=$(pwd)
 
+          cp -rf $(find ./bin/targets/ -name "*.tar.gz") ./build_openwrt_docker_image
+
+          cd build_openwrt_docker_image
+          chmod +x ./build.sh && ./build.sh $GIT_HASH
+          docker load < openwrt_docker_image/*.tar
+          docker push hackl0us/lede-aarch64:$GIT_HASH
+
+          cd ${CURRENT_DIR}
 
       # - name: Prepare artifact
       #   run: |
