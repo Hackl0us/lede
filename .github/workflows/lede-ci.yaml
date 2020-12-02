@@ -91,11 +91,11 @@ jobs:
           GIT_BRANCH=${GITHUB_REF##*/}
 
           CURRENT_DIR=$(pwd)
+          cp -rf $(find ./bin/targets/ -name "*.tar.gz") ./build_openwrt_docker_image
           cd build_openwrt_docker_image
-          cp -rf $(find ./bin/targets/ -name "*.tar.gz") ./
           chmod +x ./build.sh && ./build.sh $GIT_HASH
-
           docker load < openwrt_docker_image/*.tar
+          cd ${CURRENT_DIR}
 
       - name: Login to DockerHub
         uses: docker/login-action@v1.5.0
