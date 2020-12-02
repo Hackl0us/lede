@@ -105,7 +105,8 @@ jobs:
 
       - name: Push LEDE docker image to Docker Hub
         run: |
-          docker push hackl0us/lede-aarch64:${GIT_HASH}
+          GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
+          docker push hackl0us/lede-aarch64:"$GIT_HASH"
 
 
       # - name: Prepare artifact
