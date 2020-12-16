@@ -63,11 +63,12 @@ ramips_setup_interfaces()
 	motorola,mr2600)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rai0" "wan"
 		;;
-	phicomm,k2p|phicomm,k2p-32m\
+	phicomm,k2p|\
+	phicomm,k2p-32m|\
 	xiaoyu,xy-c5)
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
-		ucidef_set_interface_lan "eth0.1 ra0 rax0"
+		ucidef_set_interface_lan "eth0.1"
 		;;
 	ubnt,edgerouter-x)
 		ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4" "eth0"
