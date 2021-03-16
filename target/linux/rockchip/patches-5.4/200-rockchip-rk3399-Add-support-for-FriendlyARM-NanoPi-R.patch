@@ -1,6 +1,6 @@
-From e46d311ad024821f4c892fead65e5b157fb98a6b Mon Sep 17 00:00:00 2001
-From: Tianling Shen <cnsztl@project-openwrt.eu.org>
-Date: Sat, 19 Dec 2020 11:57:26 +0000
+From 11c2b38cf0a04b0edb3eabae24fb1484489725e2 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Fri, 8 Jan 2021 07:12:30 +0000
 Subject: [PATCH] rockchip: rk3399: Add support for FriendlyARM NanoPi R4S
 
 This adds support for the NanoPi R4S from FriendlyArm.
@@ -14,109 +14,85 @@ MicroSD slot
 Reset button
 WAN - LAN - SYS LED
 
-Signed-off-by: Tianling Shen <cnsztl@project-openwrt.eu.org>
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+Co-authored-by: Jensen Huang <jensenhuang@friendlyarm.com>
+Signed-off-by: Jensen Huang <jensenhuang@friendlyarm.com>
 Co-authored-by: Marty Jones <mj8263788@gmail.com>
 Signed-off-by: Marty Jones <mj8263788@gmail.com>
 ---
- arch/arm64/boot/dts/rockchip/Makefile         |   2 +
- .../dts/rockchip/rk3399-nanopi-r4s-1gb.dts    |  27 +
- .../dts/rockchip/rk3399-nanopi-r4s-4gb.dts    |  27 +
- .../boot/dts/rockchip/rk3399-nanopi-r4s.dtsi  | 122 ++++++++++++++++++
- 4 files changed, 178 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s-1gb.dts
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s-4gb.dts
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dtsi
+ arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+ .../boot/dts/rockchip/rk3399-nanopi-r4s.dts   | 178 ++++++++++++++++++
+ 2 files changed, 179 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -25,6 +25,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-leez-p710.dtb
+@@ -25,6 +25,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-le
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopc-t4.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-m4.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-neo4.dtb
-+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s-1gb.dtb
-+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s-4gb.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-puma-haikou.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc.dtb
 --- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s-1gb.dts
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+
-+#include "rk3399-nanopi-r4s.dtsi"
-+
-+/ {
-+	model = "FriendlyElec NanoPi R4S (1GB)";
-+	compatible = "friendlyarm,nanopi-r4s-1gb", "rockchip,rk3399";
-+};
-+
-+&leds {
-+	/delete-node/ status;
-+
-+	lan_led: led-0 {
-+		gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s-1gb:green:lan";
-+	};
-+
-+	sys_led: led-1 {
-+		gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s-1gb:red:sys";
-+	};
-+
-+	wan_led: led-2 {
-+		gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s-1gb:green:wan";
-+	};
-+};
---- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s-4gb.dts
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+
-+#include "rk3399-nanopi-r4s.dtsi"
-+
-+/ {
-+	model = "FriendlyElec NanoPi R4S (4GB)";
-+	compatible = "friendlyarm,nanopi-r4s-4gb", "rockchip,rk3399";
-+};
-+
-+&leds {
-+	/delete-node/ status;
-+
-+	lan_led: led-0 {
-+		gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s-4gb:green:lan";
-+	};
-+
-+	sys_led: led-1 {
-+		gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s-4gb:red:sys";
-+	};
-+
-+	wan_led: led-2 {
-+		gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
-+		label = "nanopi-r4s-4gb:green:wan";
-+	};
-+};
---- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dtsi
-@@ -0,0 +1,122 @@
++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dts
+@@ -0,0 +1,178 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
++ * Copyright (c) 2020 Jensen Huang <jensenhuang@friendlyarm.com>
 + * Copyright (c) 2020 Marty Jones <mj8263788@gmail.com>
-+ * Copyright (c) 2020 Tianling Shen <cnsztl@project-openwrt.eu.org>
++ * Copyright (c) 2020 Tianling Shen <cnsztl@gmail.com>
 + */
 +
 +/dts-v1/;
 +#include "rk3399-nanopi4.dtsi"
 +
 +/ {
++	model = "FriendlyElec NanoPi R4S";
++	compatible = "friendlyarm,nanopi-r4s", "rockchip,rk3399";
++
 +	aliases {
 +		led-boot = &sys_led;
 +		led-failsafe = &sys_led;
 +		led-running = &sys_led;
 +		led-upgrade = &sys_led;
-+		ethernet1 = &r8169;
++	};
++
++	/delete-node/ gpio-leds;
++	gpio-leds {
++		compatible = "gpio-leds";
++		pinctrl-0 = <&lan_led_pin>, <&sys_led_pin>, <&wan_led_pin>;
++		pinctrl-names = "default";
++
++		lan_led: led-0 {
++			gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_HIGH>;
++			label = "nanopi-r4s:green:lan";
++		};
++
++		sys_led: led-1 {
++			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
++			label = "nanopi-r4s:red:sys";
++		};
++
++		wan_led: led-2 {
++			gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
++			label = "nanopi-r4s:green:wan";
++		};
++	};
++
++	/delete-node/ gpio-keys;
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&reset_button_pin>;
++
++		reset {
++			debounce-interval = <50>;
++			gpios = <&gpio1 RK_PC6 GPIO_ACTIVE_LOW>;
++			label = "reset";
++			linux,code = <KEY_RESTART>;
++		};
 +	};
 +
 +	vdd_5v: vdd-5v {
@@ -128,7 +104,10 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +
 +	fan: pwm-fan {
 +		compatible = "pwm-fan";
-+		/* FIXME: adjust leveles for the connected fan */
++		/*
++		 * With 20KHz PWM and an EVERCOOL EC4007H12SA fan, these levels
++		 * work out to 0, ~1200, ~3000, and 5000RPM respectively.
++		 */
 +		cooling-levels = <0 12 18 255>;
 +		#cooling-cells = <2>;
 +		fan-supply = <&vdd_5v>;
@@ -172,13 +151,6 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +	status = "disabled";
 +};
 +
-+&leds_gpio {
-+	rockchip,pins =
-+		<0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>,
-+		<1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>,
-+		<1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-+};
-+
 +&pcie0 {
 +	max-link-speed = <1>;
 +	num-lanes = <1>;
@@ -188,10 +160,29 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +		reg = <0x00000000 0 0 0 0>;
 +		#address-cells = <3>;
 +		#size-cells = <2>;
++	};
++};
 +
-+		r8169: pcie@0,0 {
-+			reg = <0x000000 0 0 0 0>;
-+			local-mac-address = [ 00 00 00 00 00 00 ];
++&pinctrl {
++	/delete-node/ gpio-leds;
++	gpio-leds {
++		lan_led_pin: lan-led-pin {
++			rockchip,pins = <1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		sys_led_pin: sys-led-pin {
++			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		wan_led_pin: wan-led-pin {
++			rockchip,pins = <1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	/delete-node/ rockchip-key;
++	rockchip-key {
++		reset_button_pin: reset-button-pin {
++			rockchip,pins = <1 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
 +};
@@ -205,7 +196,9 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +};
 +
 +&sdmmc {
-+	host-index-min = <1>;
++	sd-uhs-sdr12;
++	sd-uhs-sdr25;
++	sd-uhs-sdr50;
 +};
 +
 +&u2phy0_host {
@@ -223,4 +216,3 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 +&vcc3v3_sys {
 +	vin-supply = <&vcc5v0_sys>;
 +};
-
