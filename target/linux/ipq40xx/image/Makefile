@@ -177,7 +177,7 @@ define Device/asus_map-ac2200
 	DEVICE_VENDOR := ASUS
 	DEVICE_MODEL := Lyra (MAP-AC2200)
 	DEVICE_DTS := qcom-ipq4019-map-ac2200
-	DEVICE_PACKAGES := ath10k-firmware-qca9888 kmod-ath3k
+	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct kmod-ath3k
 endef
 TARGET_DEVICES += asus_map-ac2200
 
@@ -199,8 +199,7 @@ define Device/asus_rt-ac58u
 	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC58U')
 	KERNEL_INITRAMFS := $$(KERNEL) | uImage none
 	KERNEL_INITRAMFS_SUFFIX := -factory.trx
-	DEVICE_PACKAGES := -kmod-ath10k -ath10k-firmware-qca4019 \
-	kmod-ath10k-ct-smallbuffers ath10k-firmware-qca4019-ct kmod-usb-ledtrig-usbport
+	DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca4019-ct kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += asus_rt-ac58u
 
@@ -217,7 +216,7 @@ define Device/asus_rt-acrh17
 	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC82U')
 	KERNEL_INITRAMFS := $$(KERNEL) | uImage none
 	KERNEL_INITRAMFS_SUFFIX := -factory.trx
-	DEVICE_PACKAGES := ipq-wifi-asus_rt-acrh17 ath10k-firmware-qca9984 kmod-usb-ledtrig-usbport
+	DEVICE_PACKAGES := ipq-wifi-asus_rt-acrh17 ath10k-firmware-qca9984-ct kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += asus_rt-acrh17
 
@@ -260,7 +259,7 @@ define Device/avm_fritzrepeater-3000
 	DEVICE_VENDOR := AVM
 	DEVICE_MODEL := FRITZ!Repeater 3000
 	DEVICE_DTS := qcom-ipq4019-fritzrepeater-3000
-	DEVICE_PACKAGES := ath10k-firmware-qca9984 fritz-caldata fritz-tffs-nand
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct fritz-caldata fritz-tffs-nand
 endef
 TARGET_DEVICES += avm_fritzrepeater-3000
 
@@ -270,7 +269,7 @@ define Device/buffalo_wtr-m2133hp
 	DEVICE_VENDOR := Buffalo
 	DEVICE_MODEL := WTR-M2133HP
 	DEVICE_DTS := qcom-ipq4019-wtr-m2133hp
-	DEVICE_PACKAGES := ath10k-firmware-qca9984 ipq-wifi-buffalo_wtr-m2133hp
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct ipq-wifi-buffalo_wtr-m2133hp
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 endef
@@ -413,7 +412,7 @@ define Device/engenius_eap2200
 	DEVICE_DTS := qcom-ipq4019-eap2200
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_PACKAGES := ath10k-firmware-qca9888 ipq-wifi-engenius_eap2200 -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
+	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct ipq-wifi-engenius_eap2200
 endef
 TARGET_DEVICES += engenius_eap2200
 
@@ -522,13 +521,6 @@ define Device/hiwifi_c526a
 endef
 TARGET_DEVICES += hiwifi_c526a
 
-define Device/hiwifi_c526a-128m
-	$(call Device/hiwifi_c526a)
-	DEVICE_VARIANT := 128M
-	DEVICE_DTS := qcom-ipq4019-c526a-128m
-endef
-TARGET_DEVICES += hiwifi_c526a-128m
-
 define Device/hugo_ac1200
 	$(call Device/FitImage)
 	DEVICE_VENDOR := Hugo
@@ -590,7 +582,7 @@ define Device/linksys_ea8300
 	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
 	IMAGES += factory.bin
 	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=EA8300
-	DEVICE_PACKAGES := ath10k-firmware-qca9888 ipq-wifi-linksys_ea8300 kmod-usb-ledtrig-usbport
+	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct ipq-wifi-linksys_ea8300 kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += linksys_ea8300
 
@@ -601,7 +593,7 @@ define Device/meraki_mr33
 	DEVICE_DTS := qcom-ipq4029-mr33
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_PACKAGES := -swconfig ath10k-firmware-qca9887
+	DEVICE_PACKAGES := -swconfig ath10k-firmware-qca9887-ct
 endef
 TARGET_DEVICES += meraki_mr33
 
@@ -682,22 +674,35 @@ define Device/openmesh_a62
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | openmesh-image ce_type=A62
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
-	DEVICE_PACKAGES := ath10k-firmware-qca9888
+	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct
 endef
 TARGET_DEVICES += openmesh_a62
 
-define Device/p2w_r619ac
+define Device/p2w_r619ac-common
 	$(call Device/FitzImage)
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := P&W
 	DEVICE_MODEL := R619AC
-	DEVICE_DTS := qcom-ipq4019-r619ac
 	DEVICE_DTS_CONFIG := config@10
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	DEVICE_PACKAGES := ipq-wifi-p2w_r619ac
 endef
+
+define Device/p2w_r619ac
+	$(call Device/p2w_r619ac-common)
+	DEVICE_DTS := qcom-ipq4019-r619ac
+	IMAGES += nand-factory.bin
+	IMAGE/nand-factory.bin := append-ubi | qsdk-ipq-factory-nand
+endef
 TARGET_DEVICES += p2w_r619ac
+
+define Device/p2w_r619ac-128m
+	$(call Device/p2w_r619ac-common)
+	DEVICE_VARIANT := 128M
+	DEVICE_DTS := qcom-ipq4019-r619ac-128m
+endef
+TARGET_DEVICES += p2w_r619ac-128m
 
 define Device/qcom_ap-dk01.1-c1
 	DEVICE_VENDOR := Qualcomm Atheros
@@ -799,8 +804,7 @@ define Device/zyxel_wre6606
 	DEVICE_DTS_CONFIG := config@4
 	IMAGE_SIZE := 13184k
 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
-	DEVICE_PACKAGES := -kmod-ath10k -ath10k-firmware-qca4019 \
-	kmod-ath10k-ct-smallbuffers ath10k-firmware-qca4019-ct
+	DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca4019-ct
 endef
 TARGET_DEVICES += zyxel_wre6606
 
